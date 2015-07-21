@@ -1,0 +1,28 @@
+<% title_attribute = (title = attributes.detect { |a| a.type.to_s == "string" }).present? ? title.name : 'title' -%>
+<li class='clearfix record <%%= cycle("on", "on-hover") %>' id="<%%= dom_id(<%= singular_name %>) -%>">
+  <span class='title'>
+    <%%= <%= singular_name %>.<%= title_attribute %> %>
+<% if localized? %>
+    <%% if Refinery::I18n.frontend_locales.many? %>
+      <span class='preview'>
+        <%% <%= singular_name %>.translations.each do |translation| %>
+          <%% if translation.<%= title_attribute %>.present? %>
+            <%%= link_to refinery_icon_tag("flags/#{translation.locale}.png", :size => '16x11'),
+                         refinery.edit_<%= namespacing.underscore %>_admin_<%= singular_name %>_path(<%= singular_name %>, :switch_locale => translation.locale),
+                         :class => 'locale' %>
+          <%% end %>
+        <%% end %>
+      </span>
+    <%% end %>
+<% end %>
+  </span>
+  <span class='actions'>
+    <% unless skip_frontend? %>
+      <%%= action_icon(:preview, refinery.<%= namespacing.underscore %>_<%= singular_name %>_path(<%= singular_name %>), t('.view_live_html')) %>
+    <%end %>
+    <%%= action_icon(:edit,    refinery.edit_<%= namespacing.underscore %>_admin_<%= singular_name %>_path(<%= singular_name %>), t('.edit') ) %>
+    <%%= action_icon(:delete,  refinery.<%= namespacing.underscore %>_admin_<%= singular_name %>_path(<%= singular_name %>), t('.delete'),
+      { class: "cancel confirm-delete",
+        data: {confirm: t('message',  scope: 'refinery.admin.delete', title: <%=singular_name%>.<%=title_attribute %>)}}  ) %>
+  </span>
+</li>
